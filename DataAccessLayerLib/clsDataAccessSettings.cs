@@ -9,7 +9,9 @@ namespace DataAccessLayerLib
     internal class clsDataAccessSettings
     {
 
-        public static string ConnectionString = "Server=. ;Database=DVLD; User Id=sa;Password=sa123456 ";
+        //public static string ConnectionString = "Server=. ;Database=DVLD; User Id=sa;Password=sa123456 ";
+        public static string ConnectionString = "Server =.; DataBase=BankSystem;Integrated Security=True; ";
+
 
     }
 }
