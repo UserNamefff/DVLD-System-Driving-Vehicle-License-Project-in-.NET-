@@ -14,11 +14,12 @@ namespace DataAccessLayerLib
     public class clsDAPeople
     {
 
-        public static bool GetPersonInfoByID(int PersonID , ref string FirstName, ref string SecondName, ref string ThirdName, ref string LastName, ref string Email, ref string Phon, ref int Address, ref DateTime DateOfBirth, ref int CountryID, ref string ImagePath, ref string Gender,ref string NationalNO)
+        
+        public static bool GetPersonInfoByID(int PersonID , ref string FirstName, ref string SecondName, ref string ThirdName, ref string LastName, ref string Email, ref string Phon, ref string Address, ref DateTime DateOfBirth, ref int NationalityCountryID, ref string ImagePath, ref short Gendor,ref string NationalNO)
         {
             bool result = false;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "SELECT * FROM People WHERE PersonID = @PersonID";
+            string cmdText = "USE [DVLD] ; SELECT * FROM [dbo].People WHERE PersonID = @PersonID";
             SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@PersonID", PersonID);
             try
@@ -32,14 +33,23 @@ namespace DataAccessLayerLib
                     FirstName = (string)sqlDataReader["FirstName"];
                     SecondName = (string)sqlDataReader["SecondName"];
                     //FullName = (FirstName +(string)sqlDataReader["SecondName"]+(string)sqlDataReader["ThirdName"] + (string)sqlDataReader["LastName"]).ToString();
-                    LastName = (string)sqlDataReader["LastdName"];
+                    
                     Email = (string)sqlDataReader["Email"];
-                    Phon = (string)sqlDataReader["Phon"];
-                    Address = (int)sqlDataReader["Address"];
+                    Phon = (string)sqlDataReader["Phone"];
+                    Address = (string)sqlDataReader["Address"];
                     DateOfBirth = (DateTime)sqlDataReader["DateOfBirth"];
-                    CountryID = (int)sqlDataReader["CountryID"];
+                    NationalityCountryID = (int)sqlDataReader["NationalityCountryID"];
                     NationalNO = (string)sqlDataReader["NationalNO"];
-
+                    Gendor = Convert.ToInt16(sqlDataReader["Gendor"]);
+                    
+                    if(sqlDataReader["LastName"] != DBNull.Value)
+                    {
+                        LastName = (string)sqlDataReader["LastName"];
+                    }
+                    else
+                    {
+                        LastName = "";
+                    }
                     if (sqlDataReader["ImagePath"] != DBNull.Value)
                     {
                         ImagePath = (string)sqlDataReader["ImagePath"];
@@ -49,6 +59,7 @@ namespace DataAccessLayerLib
                         ImagePath = "";
                     }
                 }
+
                 else
                 {
                     result = false;
@@ -68,7 +79,7 @@ namespace DataAccessLayerLib
             return result;
         }
 
-        public static bool GetPersonInfoByName(string FirstName, ref int PersonID, ref string SecondName, ref string ThirdName, ref string LastName, ref string Email, ref string Phon, ref int Address, ref DateTime DateOfBirth, ref int CountryID, ref string ImagePath, ref string Gender, ref string NationalNO)
+        public static bool GetPersonInfoByName(string FirstName, ref int PersonID, ref string SecondName, ref string ThirdName, ref string LastName, ref string Email, ref string Phon, ref string Address, ref DateTime DateOfBirth, ref int NationalityCountryID, ref string ImagePath, ref short Gendor, ref string NationalNO)
         {
             bool result = false;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
@@ -86,12 +97,13 @@ namespace DataAccessLayerLib
                     ThirdName = (string)sqlDataReader["ThirdName"];
                     SecondName = (string)sqlDataReader["SecondName"];
                     //FullName = (FirstName +(string)sqlDataReader["SecondName"]+(string)sqlDataReader["ThirdName"] + (string)sqlDataReader["LastName"]).ToString();
-                    LastName = (string)sqlDataReader["LastdName"];
+                    LastName = (string)sqlDataReader["LastName"];
                     Email = (string)sqlDataReader["Email"];
                     Phon = (string)sqlDataReader["Phon"];
-                    Address = (int)sqlDataReader["Address"];
+                    Address = (string)sqlDataReader["Address"];
                     DateOfBirth = (DateTime)sqlDataReader["DateOfBirth"];
-                    CountryID = (int)sqlDataReader["CountryID"];
+                    Gendor = (short)sqlDataReader["Gendor"];
+                    NationalityCountryID = (int)sqlDataReader["NationalityCountryID"];
                     NationalNO = (string)sqlDataReader["NationalNO"];
 
                     if (sqlDataReader["ImagePath"] != DBNull.Value)
@@ -122,7 +134,7 @@ namespace DataAccessLayerLib
             return result;
         }
         
-        public static bool GetPersonInfoByNationalNumber(string NationalNO, ref int PersonID, ref string FirstName,  ref string SecondName, ref string ThirdName, ref string LastName, ref string Email, ref string Phon, ref int Address, ref DateTime DateOfBirth, ref int CountryID, ref string ImagePath, ref string Gender)
+        public static bool GetPersonInfoByNationalNumber(string NationalNO, ref int PersonID, ref string FirstName,  ref string SecondName, ref string ThirdName, ref string LastName, ref string Email, ref string Phon, ref string Address, ref DateTime DateOfBirth, ref int NationalityCountryID, ref string ImagePath, ref short Gendor)
         {
             bool result = false;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
@@ -141,12 +153,13 @@ namespace DataAccessLayerLib
                     ThirdName = (string)sqlDataReader["ThirdName"];
                     SecondName=(string)sqlDataReader["SecondName"];
                    //FullName = (FirstName +(string)sqlDataReader["SecondName"]+(string)sqlDataReader["ThirdName"] + (string)sqlDataReader["LastName"]).ToString();
-                    LastName = (string)sqlDataReader["LastdName"];
+                    LastName = (string)sqlDataReader["LastName"];
                     Email = (string)sqlDataReader["Email"];              
+                    Gendor = (short)sqlDataReader["Gendor"];              
                     Phon = (string)sqlDataReader["Phon"];                
-                    Address = (int)sqlDataReader["Address"];
+                    Address = (string)sqlDataReader["Address"];
                     DateOfBirth = (DateTime)sqlDataReader["DateOfBirth"];
-                    CountryID = (int)sqlDataReader["CountryID"];
+                    NationalityCountryID = (int)sqlDataReader["NationalityCountryID"];
                     FirstName = (string)sqlDataReader["FirstName"];
 
                     if (sqlDataReader["ImagePath"] != DBNull.Value)
@@ -176,8 +189,8 @@ namespace DataAccessLayerLib
 
             return result;
         }
-
-        public static int AddNewPerson(string FirstName, string SecondName, string ThirdName, string LastName, string Email, string Phon, int Address, DateTime DateOfBirth, int CountryID, string ImagePath, string Gender,  string NationalNO)
+        
+        public static int AddNewPerson(string FirstName, string SecondName, string ThirdName, string LastName, string Email, string Phon, string Address, DateTime DateOfBirth, int NationalityCountryID, string ImagePath, short Gendor,  string NationalNO)
         {
             int result = -1;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
@@ -192,7 +205,7 @@ namespace DataAccessLayerLib
            ,[Address]
            ,[Phone]
            ,[Email]
-           ,[CountryID]
+           ,[NationalityCountryID]
            ,[ImagePath])
      VALUES
            (NationalNo
@@ -205,11 +218,11 @@ namespace DataAccessLayerLib
            ,Address
            ,Phone
            ,Email
-           ,CountryID
+           ,NationalityCountryID
            ,ImagePath)";
 
 
-            Gender = "Male";
+            
             SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@FirstName", FirstName);
             sqlCommand.Parameters.AddWithValue("@ThirdName", ThirdName);
@@ -220,8 +233,9 @@ namespace DataAccessLayerLib
             sqlCommand.Parameters.AddWithValue("@Email", Email);
             sqlCommand.Parameters.AddWithValue("@Phon", Phon);
             sqlCommand.Parameters.AddWithValue("@Address", Address);
+            sqlCommand.Parameters.AddWithValue("@NationalityCountryID", NationalityCountryID);
             sqlCommand.Parameters.AddWithValue("@DateOfBirth", DateOfBirth);
-            sqlCommand.Parameters.AddWithValue("@Gender", Gender);
+            sqlCommand.Parameters.AddWithValue("@Gendor", Gendor);
             
             if (ImagePath != "" && ImagePath != null)
             {
@@ -252,7 +266,7 @@ namespace DataAccessLayerLib
             return result;
         }
 
-        public static bool UpdatePerson(int PersonID, string FirstName, string SecondName, string ThirdName, string LastName, string Email, string Phon, int Address, DateTime DateOfBirth, int CountryID, string ImagePath, string Gender,  string NationalNO)
+        public static bool UpdatePerson(int PersonID, string FirstName, string SecondName, string ThirdName, string LastName, string Email, string Phon, string Address, DateTime DateOfBirth, int NationalityCountryID, string ImagePath, short Gendor,  string NationalNO)
         {
             int num = 0;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
@@ -267,7 +281,7 @@ namespace DataAccessLayerLib
       ,[Address] = @Address			
       ,[Phone] = @Phone				
       ,[Email] = @Email				
-      ,[CountryID] = CountryID
+      ,[NationalityCountryID] = @NationalityCountryID
       ,[ImagePath] = @ImagePath WHERE PersonID =@PersonID; ";
             SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
            
@@ -280,7 +294,7 @@ namespace DataAccessLayerLib
             sqlCommand.Parameters.AddWithValue("@Phon", Phon);
             sqlCommand.Parameters.AddWithValue("@Address", Address);
             sqlCommand.Parameters.AddWithValue("@DateOfBirth", DateOfBirth);
-            sqlCommand.Parameters.AddWithValue("@Gender", Gender);
+            sqlCommand.Parameters.AddWithValue("@Gendor", Gendor);
             
             if (ImagePath != "" && ImagePath != null)
             {
@@ -407,7 +421,15 @@ SELECT [PersonID]
         {
             bool result = false;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "SELECT Found=1 FROM People WHERE NationalNO = @NationalNO";
+            string cmdText = @"USE [DVLD] ;
+
+
+SELECT 
+      [NationalNo]
+      
+  FROM [dbo].[People] Where [NationalNo] = @NationalNO
+
+";
             SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@NationalNO", NationalNO);
             try
@@ -428,6 +450,8 @@ SELECT [PersonID]
 
             return result;
         }
+
+
 
     }
 

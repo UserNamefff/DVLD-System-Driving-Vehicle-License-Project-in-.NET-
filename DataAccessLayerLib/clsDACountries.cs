@@ -17,7 +17,7 @@ namespace DataAccessLayerLib
         {
             bool isFound = false;
 
-            string Query = @"Select * From Countries where CountryID =@CountryID ";
+            string Query = @"USE [DVLD] ; Select * From Countries where CountryID =@CountryID ";
 
             SqlConnection conn = new SqlConnection(clsDataAccessSettings.ConnectionString);
 

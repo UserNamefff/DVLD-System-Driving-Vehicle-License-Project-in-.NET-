@@ -19,24 +19,29 @@ namespace BusinessLayer
             eEmpty
         }
 
+        enum enGender { Male  , Female }
+
+        //public enGender _eGender;
+
         private int _ID;
 
         private string _FName;
 
         private string _LName;
-
+        private short _GenderNO;
         private string _SecondName;
         private string _ThirdName;
         public string FullName { get { return _FName + _SecondName + _ThirdName + _LName; } }
 
         private string _Email;                
+        
         private string _NationalNO;                
 
         private string _PhoneNumber;           
                                                
         private string _Gender;
 
-        private int _Address;
+        private string _Address;
 
         private int _CountryID;
 
@@ -45,6 +50,17 @@ namespace BusinessLayer
         private string _ImagePath;
 
         private enMode eMode;
+        private static short _ConvertStringToInt(string sGender)
+        {
+
+            return (sGender == "Male") ? (short)enGender.Male 
+                                        : (short)enGender.Female;
+        }
+
+        private static string _ConvertIntToString(short  GenderNO)
+        {
+            return (GenderNO == (short)enGender.Male) ? "Male" : "Femal";
+        }
 
         public int ID
         {
@@ -147,8 +163,12 @@ namespace BusinessLayer
                 _Gender = value;
             }
         }
-
-        public int Adrress
+        public short GenderNO
+        {
+            get { return _GenderNO; }
+            set { _GenderNO = value; }
+        }
+        public string Adrress
         {
             get
             {
@@ -197,7 +217,7 @@ namespace BusinessLayer
         }
 
 
-        private clsPerson1(int iD, string fName, string lName, string secondName, string thirdName, string email, string phoneNumber, string gender, int address, int countryID, DateTime dateOfBirth, string imagePath, enMode eMode ,string nationalNO)
+        public clsPerson1(int iD, string fName, string lName, string secondName, string thirdName, string email, string phoneNumber, string gender, string address, int countryID, DateTime dateOfBirth, string imagePath, enMode eMode ,string nationalNO)
         {
             _ID = iD;
             _FName = fName;
@@ -216,22 +236,27 @@ namespace BusinessLayer
             
         }
 
-        public clsPerson1()
+        private clsPerson1()
         {
             _ID = -1;
             _FName = "";
             _LName = "";
             _SecondName = "";
+            _Address = "";
             _PhoneNumber = "";
             _Email = "";
             _Gender = "";
-            _Address = 0;
+            _Address = "";
             _ImagePath = "";
             _DateOfBirth = DateTime.Now;
             _CountryID = 0;
             eMode = enMode.eAdd;
         }
 
+        public static clsPerson1 AddNewPerson()
+        {
+            return new clsPerson1();
+        }
         public bool Save()
         {
             switch (eMode)
@@ -257,16 +282,18 @@ namespace BusinessLayer
 
             return false;
         }
-
         private bool _Add()
         {
-            _ID = clsDAPeople.AddNewPerson(_FName,_SecondName,_ThirdName, _LName, _Email, _PhoneNumber, _Address, _DateOfBirth, _CountryID, _ImagePath, _Gender,_NationalNO);
+            _GenderNO = _ConvertStringToInt(_Gender);
+
+            _ID = clsDAPeople.AddNewPerson(_FName,_SecondName,_ThirdName, _LName, _Email, _PhoneNumber, _Address, _DateOfBirth, _CountryID, _ImagePath, _GenderNO,_NationalNO);
             return _ID != 0;
         }
 
         public bool Update()
         {
-            return clsDAPeople.UpdatePerson(_ID,_FName, _SecondName, _ThirdName, _LName, _Email, _PhoneNumber, _Address, _DateOfBirth, _CountryID, _ImagePath, _Gender, _NationalNO);
+            _GenderNO = _ConvertStringToInt(_Gender);
+            return clsDAPeople.UpdatePerson(_ID,_FName, _SecondName, _ThirdName, _LName, _Email, _PhoneNumber, _Address, _DateOfBirth, _CountryID, _ImagePath, _GenderNO, _NationalNO);
         }
 
         public bool Delete()
@@ -279,41 +306,49 @@ namespace BusinessLayer
             return clsDAPeople.GetAllPeople();
         }
 
-        public clsPerson1 Find(int PersonID)
+        public static clsPerson1 Find(int PersonID)
         {
             string FirstName = "";
             string LastName = "";
+            string SecondName = "";
+            string ThirdName = "";
             string Phon = "";
             string Email = "";
             string Gender = "";
-            int Address = 0;
+            short GenderNO = 0;
+            string Address = "";
             int CountryID = 0;
             DateTime DateOfBirth = DateTime.Now;
             string ImagePath = "";
             string NationalNO = "";
-            if (clsDAPeople.GetPersonInfoByID(PersonID, ref FirstName, ref _SecondName,ref _ThirdName, ref LastName, ref Email, ref Phon, ref Address, ref DateOfBirth, ref CountryID, ref ImagePath, ref Gender, ref NationalNO))
+            if (clsDAPeople.GetPersonInfoByID(PersonID, ref FirstName, ref SecondName,ref ThirdName, ref LastName, ref Email, ref Phon, ref Address, ref DateOfBirth, ref CountryID, ref ImagePath, ref GenderNO, ref NationalNO))
             {
-                return new clsPerson1(PersonID, FirstName, LastName, SecondName, ThirdName,  Email, Gender, Phon, Address, CountryID, DateOfBirth, ImagePath,enMode.eAdd,NationalNO);
+                Gender = _ConvertIntToString(GenderNO);
+                return new clsPerson1(PersonID, FirstName, LastName, SecondName, ThirdName,  Email, Phon,Gender, Address, CountryID, DateOfBirth, ImagePath,enMode.eUpdate,NationalNO);
             }
 
             return null;
         }
 
-        public clsPerson1 Find(string NationalNO)
+        public static clsPerson1 Find(string NationalNO)
         {
             string FirstName = "";
             string LastName = "";
             string Phon = "";
             string Email = "";
             string Gender = "";
-            int Address = 0;
+            short GenderN = 0;
+            string Address = "";
             int CountryID = 0;
             DateTime DateOfBirth = DateTime.Now;
             string ImagePath = "";
+            string SecondName = "";
+            string ThirdName = "";
             int PersonID = 0;
-            if (clsDAPeople.GetPersonInfoByNationalNumber(NationalNO,ref PersonID, ref FirstName, ref _SecondName, ref _ThirdName, ref LastName, ref Email, ref Phon, ref Address, ref DateOfBirth, ref CountryID, ref ImagePath, ref Gender))
+            if (clsDAPeople.GetPersonInfoByNationalNumber(NationalNO,ref PersonID, ref FirstName, ref SecondName, ref ThirdName, ref LastName, ref Email, ref Phon, ref Address, ref DateOfBirth, ref CountryID, ref ImagePath, ref GenderN))
             {
-                return new clsPerson1(PersonID, FirstName, LastName, SecondName, ThirdName, Email, Gender, Phon, Address, CountryID, DateOfBirth, ImagePath, enMode.eAdd, NationalNO);
+                Gender = _ConvertIntToString(GenderN);
+                return new clsPerson1(PersonID, FirstName, LastName, SecondName, ThirdName, Email, Gender, Phon, Address, CountryID, DateOfBirth, ImagePath, enMode.eUpdate, NationalNO);
             }
 
             return null;
@@ -324,22 +359,33 @@ namespace BusinessLayer
             string SecondName = "";
             string ThirdName = "";
             string LastName = "";
+            short GenderNO = 0;
             string Phon = "";
             string Email = "";
             string Gender = "";
-            int Address = 0;
+
+            string Address = "";
             int CountryID = 0;
             DateTime DateOfBirth = DateTime.Now;
             string ImagePath = "";
             int PersonID = 0;
-            if (clsDAPeople.GetPersonInfoByName(FirstName, ref PersonID, ref SecondName, ref ThirdName, ref LastName, ref Email, ref Phon, ref Address, ref DateOfBirth, ref CountryID, ref ImagePath, ref Gender, ref NationalNO))
+            if (clsDAPeople.GetPersonInfoByName(FirstName, ref PersonID, ref SecondName, ref ThirdName, ref LastName, ref Email, ref Phon, ref Address, ref DateOfBirth, ref CountryID, ref ImagePath, ref GenderNO, ref NationalNO))
             {
-                return new clsPerson1(PersonID, FirstName, LastName, SecondName, ThirdName, Email, Gender, Phon, Address, CountryID, DateOfBirth, ImagePath, enMode.eAdd, NationalNO);
+                Gender = _ConvertIntToString(GenderNO);
+                return new clsPerson1(PersonID, FirstName, LastName, SecondName, ThirdName, Email, Gender, Phon, Address, CountryID, DateOfBirth, ImagePath, enMode.eUpdate, NationalNO);
             }
 
             return null;
         }
 
+        public static bool IsPersonExists(string NationalNO)
+        {
+            if (!string.IsNullOrEmpty(NationalNO))
+            { 
+                 return clsDAPeople.IsPersonExist(NationalNO);
+            }
+            return false;
+        }
     }
 
 }
