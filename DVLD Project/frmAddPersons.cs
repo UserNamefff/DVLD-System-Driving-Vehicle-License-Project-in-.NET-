@@ -93,7 +93,6 @@ namespace DVLD_Project
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.lbl);
             this.Controls.Add(this.lblTitle);
-            this.Controls.Add(this.crtlAddPerson1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Name = "frmAddPersons";
             this.Text = "Add/Edite Person";
