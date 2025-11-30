@@ -3,11 +3,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36109.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Presentation Layer DVLD Project", "DVLD Project\Presentation Layer DVLD Project.csproj", "{6CC437B5-E64D-463F-AF71-4A14BCEEC605}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DVLD Project", "DVLD Project\DVLD Project.csproj", "{6CC437B5-E64D-463F-AF71-4A14BCEEC605}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccessLayerLib", "DataAccessLayerLib\DataAccessLayerLib.csproj", "{E34D933C-4EC5-441F-A4BB-C9FF2E1E421D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DVLD_DataAccessLayerLib", "DataAccessLayerLib\DVLD_DataAccessLayerLib.csproj", "{E34D933C-4EC5-441F-A4BB-C9FF2E1E421D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BusinessLayer", "BusinessLayer\BusinessLayer.csproj", "{86DF585B-AFA3-4DCB-90C3-80370348B5CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DVLD_BusinessLayer", "BusinessLayer\DVLD_BusinessLayer.csproj", "{86DF585B-AFA3-4DCB-90C3-80370348B5CE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using DataAccessLayerLib;
+using DVLD_DataAccessLayerLib;
 
-namespace BusinessLayer
+namespace DVLD_BusinessLayer
 {
     public class clsCountry
     {

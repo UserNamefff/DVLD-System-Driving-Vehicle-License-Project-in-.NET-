@@ -1,4 +1,4 @@
-﻿using DataAccessLayerLib;
+﻿using DVLD_DataAccessLayerLib;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -7,11 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccessLayerLib
+namespace DVLD_DataAccessLayerLib
 {
-    public class clsUsersAccessData
+    public class clsDALUsers
     {
-        public static bool GetUserInfoByUserID(int UserID, ref int PersonID, ref string UserName, ref string Password, ref int Permissoins, ref int JobID, ref int BranchID, ref bool Status)
+        public static bool GetUserInfoByUserID(int UserID, ref int PersonID, ref string UserName, ref string Password,ref bool IsActive, ref int Permissoins)
         {
             bool result = false;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
@@ -25,13 +25,13 @@ namespace DataAccessLayerLib
                 if (sqlDataReader.Read())
                 {
                     result = true;
-                    JobID = (int)sqlDataReader["JobID"];
-                    BranchID = (int)sqlDataReader["BranchID"];
-                    Permissoins = (int)sqlDataReader["Permissoins"];
+
+                    
                     Password = (string)sqlDataReader["Password"];
                     UserName = (string)sqlDataReader["UserName"];
                     PersonID = (int)sqlDataReader["PersonID"];
-                    string text = (string)sqlDataReader["Status"];
+                    IsActive = (bool)sqlDataReader["IsActive"];
+                    Permissoins = (int)sqlDataReader["Permissions"];
                 }
                 else
                 {
@@ -51,14 +51,52 @@ namespace DataAccessLayerLib
 
             return result;
         }
-        
-        
-        
-        public static bool GetUserInfoByUserName(string UserName, ref int PersonID, ref int UserID, ref string Password, ref int Permissoins, ref int JobID, ref int BranchID, ref bool Status)
+        public static bool GetUserInfoByPersonID(  int PersonID, ref int UserID, ref string UserName, ref string Password, ref bool IsActive, ref int Permissoins)
         {
             bool result = false;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "SELECT * FROM Users WHERE UserName = @UserName";
+            string cmdText = "USE [DVLD];SELECT * FROM Users WHERE PersonID = @PersonID";
+            SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
+            sqlCommand.Parameters.AddWithValue("@PersonID", PersonID);
+            try
+            {
+                sqlConnection.Open();
+                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                if (sqlDataReader.Read())
+                {
+                    result = true;
+
+
+                    Password = (string)sqlDataReader["Password"];
+                    UserName = (string)sqlDataReader["UserName"];
+                    UserID = (int)sqlDataReader["UserID"];
+                    IsActive = (bool)sqlDataReader["IsActive"];
+                    Permissoins = (int)sqlDataReader["Permissions"];
+                }
+                else
+                {
+                    result = false;
+                }
+
+                sqlDataReader.Close();
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+
+            return result;
+        }
+
+        public static bool GetUserInfoByUserName(string UserName, ref int PersonID, ref int UserID, ref string Password,ref bool IsActive, ref int Permissoins)
+        {
+            bool result = false;
+            SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+            string cmdText = "USE [DVLD];SELECT * FROM Users WHERE UserName = @UserName";
             SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@UserName", UserName);
             try
@@ -69,8 +107,7 @@ namespace DataAccessLayerLib
                 {
                     result = true;
                     UserID = (int)sqlDataReader["UserID"];
-                    JobID = sqlDataReader.GetInt32(sqlDataReader.GetOrdinal("JobID"));
-                    BranchID = (int)sqlDataReader["BranchID"];
+                    
                     Permissoins = (int)sqlDataReader["Permissoins"];
                     Password = (string)sqlDataReader["Password"];
                     UserName = (string)sqlDataReader["UserName"];
@@ -95,11 +132,11 @@ namespace DataAccessLayerLib
             return result;
         }
 
-        public static bool GetUserInfoByUserNameAndPassword(string UserName, string Password, ref int PersonID, ref int UserID, ref int Permissoins, ref int JobID, ref int BranchID, ref bool Status)
+        public static bool GetUserInfoByUserNameAndPassword(string UserName, string Password, ref int PersonID, ref int UserID, ref bool IsActive,ref int Permissoins)
         {
             bool result = false;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "SELECT * FROM Users WHERE UserName = @UserName And Password = @Password ";
+            string cmdText = "USE [DVLD];SELECT * FROM Users WHERE UserName = @UserName And Password = @Password ";
             SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@UserName", UserName);
             sqlCommand.Parameters.AddWithValue("@Password", Password);
@@ -111,8 +148,7 @@ namespace DataAccessLayerLib
                 {
                     result = true;
                     UserID = (int)sqlDataReader["UserID"];
-                    JobID = (int)sqlDataReader["JobID"];
-                    BranchID = (int)sqlDataReader["BranchID"];
+                    
                     Permissoins = (int)sqlDataReader["Permissoins"];
                     PersonID = (int)sqlDataReader["PersonID"];
                     string @string = sqlDataReader.GetString(sqlDataReader.GetOrdinal("Status"));
@@ -136,19 +172,35 @@ namespace DataAccessLayerLib
             return result;
         }
 
-        public static int AddNewUser(int PersonID, string UserName, string Password, int Permissoins, int JobID, int BranchID, bool Status)
+        public static int AddNewUser(int PersonID, string UserName, string Password,bool IsActive, int Permissoins)
         {
             int result = -1;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "INSERT INTO Users (PersonID, UserName, Password, Permissoins, JobID,BranchID,Status)\r\n                             VALUES (@PersonID, @UserName, @Password, @Permissoins, @JobID,@BranchID,@Status);\r\n                             SELECT SCOPE_IDENTITY();";
-            SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
+            string cmdText = @"USE [DVLD]; INSERT INTO [dbo].Users (PersonID, UserName, Password,IsActive, Permissions)
+                                                            VALUES (@PersonID, @UserName, @Password,@IsActive, @Permissions);
+                                    SELECT SCOPE_IDENTITY();";
+
+            string Query = @"USE [DVLD];
+                            INSERT INTO [dbo].[Users]
+                                       ([PersonID]
+                                       ,[UserName]
+                                       ,[Password]
+                                       ,[IsActive]
+                                       ,[Permissions])
+                                 VALUES
+                                       (@PersonID
+                                       ,@UserName
+                                       ,@Password
+                                       ,@IsActive
+                                       ,@Permissions); SELECT SCOPE_IDENTITY();";
+
+            SqlCommand sqlCommand = new SqlCommand(Query, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@PersonID", PersonID);
-            sqlCommand.Parameters.AddWithValue("@JobID", JobID);
-            sqlCommand.Parameters.AddWithValue("@BranchID", BranchID);
-            sqlCommand.Parameters.AddWithValue("@Permissoins", Permissoins);
+            
+            sqlCommand.Parameters.AddWithValue("@Permissions", Permissoins);
             sqlCommand.Parameters.AddWithValue("@UserName", UserName);
             sqlCommand.Parameters.AddWithValue("@Password", Password);
-            sqlCommand.Parameters.AddWithValue("@Status", Status);
+            sqlCommand.Parameters.AddWithValue("@IsActive", IsActive);
             try
             {
                 sqlConnection.Open();
@@ -169,20 +221,26 @@ namespace DataAccessLayerLib
             return result;
         }
 
-        public static bool UpdateUser(int UserID, int PersonID, string UserName, string Password, int Permissoins, int JobID, int BranchID, bool Status)
+        public static bool UpdateUser(int UserID, int PersonID, string UserName, string Password, bool IsActive, int Permissoins)
         {
             int num = 0;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "Update  Users  \r\n                            set PersonID = @PersonID, \r\n                                JobID = @JobID, \r\n                                BranchID = @BranchID, \r\n                                Permissoins = @Permissoins, \r\n                                UserName = @UserName, \r\n                                Password = @Password,\r\n                                Status =@Status\r\n                                where UserID = @UserID";
-            SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
+            //string cmdText = "USE [DVLD];Update  Users  \r\n                            set PersonID = @PersonID, \r\n                                JobID = @JobID, \r\n                                BranchID = @BranchID, \r\n                                Permissoins = @Permissoins, \r\n                                UserName = @UserName, \r\n                                Password = @Password,\r\n                                Status =@Status\r\n                                where UserID = @UserID";
+            string Query = @"USE [DVLD]; UPDATE [dbo].[Users]
+                               SET [PersonID] = @PersonID
+                                  ,[UserName] = @UserName
+                                  ,[Password] = @Password
+                                  ,[IsActive] = @IsActive
+                                  ,[Permissions] = @Permissions
+                             WHERE UserID = @UserID";
+            SqlCommand sqlCommand = new SqlCommand(Query, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@UserID", UserID);
             sqlCommand.Parameters.AddWithValue("@PersonID", PersonID);
-            sqlCommand.Parameters.AddWithValue("@JobID", JobID);
-            sqlCommand.Parameters.AddWithValue("@BranchID", BranchID);
-            sqlCommand.Parameters.AddWithValue("@Permissoins", Permissoins);
+            sqlCommand.Parameters.AddWithValue("@Permissions", Permissoins);
             sqlCommand.Parameters.AddWithValue("@UserName", UserName);
             sqlCommand.Parameters.AddWithValue("@Password", Password);
-            sqlCommand.Parameters.AddWithValue("@Status", Status);
+            sqlCommand.Parameters.AddWithValue("@IsActive", IsActive);
+
             try
             {
                 sqlConnection.Open();
@@ -204,8 +262,14 @@ namespace DataAccessLayerLib
         {
             DataTable dataTable = new DataTable();
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "SELECT Users.UserID, Persons.FirstName, Persons.LastName, Users.UserName, Users.Password, Users.Status, Users.Permissoins, Jobs.JobName, Branches.BranchName\r\n                            FROM     Users INNER JOIN  Persons ON Users.PersonID = Persons.PersonID INNER JOIN\r\n                              Jobs ON Users.JobID = Jobs.ID INNER Join  Branches ON Users.BranchID = Branches.BranchID";
-            SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
+            string cmdText = @"USE [DVLD]; SELECT Users.UserID, Users.PersonID,  (CASE When People.LastName = NULL  
+			THEN
+		 People.FirstName+' '+ People.SecondName +' '+People.ThirdName 
+		 else People.SecondName +' '+People.ThirdName+' '+ People.LastName end)AS FullName ,Users.UserName, Users.IsActive, Users.Permissions
+
+FROM     Users INNER JOIN
+                  People ON Users.PersonID = People.PersonID";
+                      SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
             try
             {
                 sqlConnection.Open();
@@ -236,7 +300,7 @@ namespace DataAccessLayerLib
         public static bool ChangeUserPassword(int UserID, string UserName, string NewUserPassword)
         {
             bool result = false;
-            string cmdText = "Update Users set Password =@NewUserPassword,UserName=@UserName Where UserID =@UserID ";
+            string cmdText = "USE [DVLD];Update Users set Password =@NewUserPassword,UserName=@UserName Where UserID =@UserID ";
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
             SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@UserID", UserID);
@@ -263,7 +327,7 @@ namespace DataAccessLayerLib
         {
             int num = 0;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "Delete Users \r\n                                where UserID = @UserID";
+            string cmdText = "USE [DVLD];Delete Users \r\n                                where UserID = @UserID";
             SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@UserID", UserID);
             try
@@ -286,9 +350,35 @@ namespace DataAccessLayerLib
         {
             bool result = false;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "SELECT Found=1 FROM Users WHERE UserID = @UserID";
+            string cmdText = "USE [DVLD];SELECT Found=1 FROM Users WHERE UserID = @UserID";
             SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@UserID", ID);
+            try
+            {
+                sqlConnection.Open();
+                SqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
+                result = sqlDataReader.HasRows;
+                sqlDataReader.Close();
+            }
+            catch (Exception)
+            {
+                result = false;
+            }
+            finally
+            {
+                sqlConnection.Close();
+            }
+
+            return result;
+        }
+
+        public static bool IsUserExist(string UserName)
+        {
+            bool result = false;
+            SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
+            string cmdText = "USE [DVLD];SELECT Found=1 FROM Users WHERE UserName = @UserName";
+            SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
+            sqlCommand.Parameters.AddWithValue("@UserName", UserName);
             try
             {
                 sqlConnection.Open();
@@ -312,7 +402,7 @@ namespace DataAccessLayerLib
         {
             bool result = false;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "SELECT Found=1 FROM Users WHERE PersonID = @PersonID";
+            string cmdText = "USE [DVLD];SELECT Found=1 FROM Users WHERE PersonID = @PersonID";
             SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@PersonID", PersonID);
             try
@@ -338,7 +428,7 @@ namespace DataAccessLayerLib
         {
             int result = -1;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "INSERT INTO Users (UserID, LoginLogoutDate, LoginTime)\r\n                             VALUES (@UserID, @LoginLogoutDate, @LoginTime);\r\n                             SELECT SCOPE_IDENTITY();";
+            string cmdText = "USE [DVLD];INSERT INTO Users (UserID, LoginLogoutDate, LoginTime)\r\n                             VALUES (@UserID, @LoginLogoutDate, @LoginTime);\r\n                             SELECT SCOPE_IDENTITY();";
             SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@LoginLogoutDate", LoginLogoutDate);
             sqlCommand.Parameters.AddWithValue("@UserID", UserID);
@@ -367,7 +457,7 @@ namespace DataAccessLayerLib
         {
             int num = 0;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "Update  RegisterUsers  \r\n                            set LogoutTime = @LogoutTime, \r\n                                where UserID = @UserID";
+            string cmdText = "USE [DVLD];Update  RegisterUsers  \r\n                            set LogoutTime = @LogoutTime, \r\n                                where UserID = @UserID";
             SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@UserID", UserID);
             sqlCommand.Parameters.AddWithValue("@LogoutTime", LogoutTime);
@@ -392,7 +482,7 @@ namespace DataAccessLayerLib
         {
             DataTable dataTable = new DataTable();
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "SELECT *FROM RegisterUsers";
+            string cmdText = "USE [DVLD];SELECT *FROM RegisterUsers";
             SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
             try
             {
@@ -415,6 +505,19 @@ namespace DataAccessLayerLib
 
             return dataTable;
         }
+
+
+        public static bool ChangeUserPermissions(int UserID, int Permissions)
+        {
+            //Change User Permissions will be here .....
+
+            return false;
+        }
+
+
+
+
+
     }
 
 }

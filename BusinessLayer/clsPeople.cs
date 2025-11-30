@@ -4,9 +4,9 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DataAccessLayerLib;
+using DVLD_DataAccessLayerLib;
 
-namespace BusinessLayer
+namespace DVLD_BusinessLayer
 {
 
     public class clsPerson1
@@ -26,12 +26,12 @@ namespace BusinessLayer
         private int _ID;
 
         private string _FName;
-
+        public clsCountry Country ;
         private string _LName;
         private short _GenderNO;
         private string _SecondName;
         private string _ThirdName;
-        public string FullName { get { return _FName + _SecondName + _ThirdName + _LName; } }
+        public string FullName { get { return _FName +' '+ _SecondName+' ' + _ThirdName+' ' + _LName; } }
 
         private string _Email;                
         
@@ -232,6 +232,7 @@ namespace BusinessLayer
             _CountryID = countryID;
             _DateOfBirth = dateOfBirth;
             _ImagePath = imagePath;
+            Country = clsCountry.Find(countryID);
             this.eMode = eMode;
             
         }
@@ -269,35 +270,74 @@ namespace BusinessLayer
                     }
 
                     break;
-                case enMode.eEmpty:
-                    return false;
-                case enMode.eUpdate:
-                    if (Update())
-                    {
-                        return true;
-                    }
 
+                case enMode.eDelete:
+                    {
+                        if (Delete())
+                        {
+                            return true;
+                        }
+                    }
+                break;
+
+                case enMode.eEmpty:
+                    {
+                        return false;
+                    }
+                    break;
+
+                case enMode.eUpdate:
+                    {
+                        if (_Update())
+                        {
+                            return true;
+                        }
+                    }
                     break;
             }
 
             return false;
         }
+
+
         private bool _Add()
         {
             _GenderNO = _ConvertStringToInt(_Gender);
-
-            _ID = clsDAPeople.AddNewPerson(_FName,_SecondName,_ThirdName, _LName, _Email, _PhoneNumber, _Address, _DateOfBirth, _CountryID, _ImagePath, _GenderNO,_NationalNO);
+            
+            //Check If any requard person info is null ... 
+            if((string.IsNullOrWhiteSpace(_FName) && string.IsNullOrWhiteSpace(_SecondName) && string.IsNullOrWhiteSpace(_PhoneNumber)  && string.IsNullOrWhiteSpace(_NationalNO)) )
+            {
+                return false;
+            }
+                _ID = clsDAPeople.AddNewPerson(_FName,_SecondName,_ThirdName, _LName, _Email, _PhoneNumber, _Address, _DateOfBirth, _CountryID, _ImagePath, _GenderNO,_NationalNO);
             return _ID != 0;
         }
 
-        public bool Update()
+        private bool _Update()
         {
+            //Check If any requard person info is null ... 
+            if ((string.IsNullOrWhiteSpace(_FName) && string.IsNullOrWhiteSpace(_SecondName) && string.IsNullOrWhiteSpace(_PhoneNumber) && string.IsNullOrWhiteSpace(_NationalNO)))
+            {
+                return false;
+            }
             _GenderNO = _ConvertStringToInt(_Gender);
             return clsDAPeople.UpdatePerson(_ID,_FName, _SecondName, _ThirdName, _LName, _Email, _PhoneNumber, _Address, _DateOfBirth, _CountryID, _ImagePath, _GenderNO, _NationalNO);
         }
 
+        private bool IsPersonHasRelation(int PersonID)
+        {
+            //Check in Applications Table , this method will be here ........
+            return false;
+        }
+        
         public bool Delete()
         {
+            if(IsPersonHasRelation(_ID))
+            {
+               return false;
+            }
+
+            eMode = enMode.eDelete;
             return clsDAPeople.DeletePerson(_ID);
         }
 
@@ -348,7 +388,7 @@ namespace BusinessLayer
             if (clsDAPeople.GetPersonInfoByNationalNumber(NationalNO,ref PersonID, ref FirstName, ref SecondName, ref ThirdName, ref LastName, ref Email, ref Phon, ref Address, ref DateOfBirth, ref CountryID, ref ImagePath, ref GenderN))
             {
                 Gender = _ConvertIntToString(GenderN);
-                return new clsPerson1(PersonID, FirstName, LastName, SecondName, ThirdName, Email, Gender, Phon, Address, CountryID, DateOfBirth, ImagePath, enMode.eUpdate, NationalNO);
+                return new clsPerson1(PersonID, FirstName, LastName, SecondName, ThirdName, Email, Phon,Gender, Address, CountryID, DateOfBirth, ImagePath, enMode.eUpdate, NationalNO);
             }
 
             return null;
@@ -372,7 +412,7 @@ namespace BusinessLayer
             if (clsDAPeople.GetPersonInfoByName(FirstName, ref PersonID, ref SecondName, ref ThirdName, ref LastName, ref Email, ref Phon, ref Address, ref DateOfBirth, ref CountryID, ref ImagePath, ref GenderNO, ref NationalNO))
             {
                 Gender = _ConvertIntToString(GenderNO);
-                return new clsPerson1(PersonID, FirstName, LastName, SecondName, ThirdName, Email, Gender, Phon, Address, CountryID, DateOfBirth, ImagePath, enMode.eUpdate, NationalNO);
+                return new clsPerson1(PersonID, FirstName, LastName, SecondName, ThirdName, Email,  Phon, Gender, Address, CountryID, DateOfBirth, ImagePath, enMode.eUpdate, NationalNO);
             }
 
             return null;
@@ -386,6 +426,7 @@ namespace BusinessLayer
             }
             return false;
         }
+
     }
 
 }

@@ -35,7 +35,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Name = "ctrlShowPeopleInfo";
-            this.Size = new System.Drawing.Size(944, 445);
+            this.Size = new System.Drawing.Size(771, 82);
             this.ResumeLayout(false);
 
         }

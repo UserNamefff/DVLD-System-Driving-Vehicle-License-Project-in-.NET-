@@ -75,7 +75,7 @@ namespace DVLD_Project.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap Add_New_User_32 {
             get {
-                object obj = ResourceManager.GetObject("Add New User 32", resourceCulture);
+                object obj = ResourceManager.GetObject("Add New _User 32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -85,7 +85,7 @@ namespace DVLD_Project.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap Add_New_User_72 {
             get {
-                object obj = ResourceManager.GetObject("Add New User 72", resourceCulture);
+                object obj = ResourceManager.GetObject("Add New _User 72", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -95,7 +95,7 @@ namespace DVLD_Project.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap Add_Person_40 {
             get {
-                object obj = ResourceManager.GetObject("Add Person 40", resourceCulture);
+                object obj = ResourceManager.GetObject("Add _Person 40", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -105,7 +105,7 @@ namespace DVLD_Project.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap Add_Person_72 {
             get {
-                object obj = ResourceManager.GetObject("Add Person 72", resourceCulture);
+                object obj = ResourceManager.GetObject("Add _Person 72", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -195,7 +195,7 @@ namespace DVLD_Project.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap ApplicationType {
             get {
-                object obj = ResourceManager.GetObject("ApplicationType", resourceCulture);
+                object obj = ResourceManager.GetObject("_ApplicationType", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -345,7 +345,7 @@ namespace DVLD_Project.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap Delete_User_32 {
             get {
-                object obj = ResourceManager.GetObject("Delete User 32", resourceCulture);
+                object obj = ResourceManager.GetObject("Delete _User 32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -455,7 +455,7 @@ namespace DVLD_Project.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap Edit_User_32 {
             get {
-                object obj = ResourceManager.GetObject("Edit User 32", resourceCulture);
+                object obj = ResourceManager.GetObject("Edit _User 32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -835,7 +835,7 @@ namespace DVLD_Project.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap Person_32 {
             get {
-                object obj = ResourceManager.GetObject("Person 32", resourceCulture);
+                object obj = ResourceManager.GetObject("_Person 32", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -845,7 +845,7 @@ namespace DVLD_Project.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap Person_321 {
             get {
-                object obj = ResourceManager.GetObject("Person 321", resourceCulture);
+                object obj = ResourceManager.GetObject("_Person 321", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -1125,7 +1125,7 @@ namespace DVLD_Project.Properties {
         /// </summary>
         internal static System.Drawing.Bitmap User_32__2 {
             get {
-                object obj = ResourceManager.GetObject("User 32 -2", resourceCulture);
+                object obj = ResourceManager.GetObject("_User 32 -2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -8,14 +8,14 @@ using System.Data.SqlClient;
 
 
 
-namespace DataAccessLayerLib
+namespace DVLD_DataAccessLayerLib
 {
 
     public class clsDAPeople
     {
 
         
-        public static bool GetPersonInfoByID(int PersonID , ref string FirstName, ref string SecondName, ref string ThirdName, ref string LastName, ref string Email, ref string Phon, ref string Address, ref DateTime DateOfBirth, ref int NationalityCountryID, ref string ImagePath, ref short Gendor,ref string NationalNO)
+        public static bool GetPersonInfoByID(int PersonID , ref string FirstName, ref string SecondName, ref string ThirdName, ref string LastName, ref string Email, ref string Phone, ref string Address, ref DateTime DateOfBirth, ref int NationalityCountryID, ref string ImagePath, ref short Gendor,ref string NationalNO)
         {
             bool result = false;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
@@ -35,7 +35,7 @@ namespace DataAccessLayerLib
                     //FullName = (FirstName +(string)sqlDataReader["SecondName"]+(string)sqlDataReader["ThirdName"] + (string)sqlDataReader["LastName"]).ToString();
                     
                     Email = (string)sqlDataReader["Email"];
-                    Phon = (string)sqlDataReader["Phone"];
+                    Phone = (string)sqlDataReader["Phone"];
                     Address = (string)sqlDataReader["Address"];
                     DateOfBirth = (DateTime)sqlDataReader["DateOfBirth"];
                     NationalityCountryID = (int)sqlDataReader["NationalityCountryID"];
@@ -48,7 +48,7 @@ namespace DataAccessLayerLib
                     }
                     else
                     {
-                        LastName = "";
+                        LastName = "USE [DVLD] ;";
                     }
                     if (sqlDataReader["ImagePath"] != DBNull.Value)
                     {
@@ -56,7 +56,7 @@ namespace DataAccessLayerLib
                     }
                     else
                     {
-                        ImagePath = "";
+                        ImagePath = "";;
                     }
                 }
 
@@ -79,11 +79,11 @@ namespace DataAccessLayerLib
             return result;
         }
 
-        public static bool GetPersonInfoByName(string FirstName, ref int PersonID, ref string SecondName, ref string ThirdName, ref string LastName, ref string Email, ref string Phon, ref string Address, ref DateTime DateOfBirth, ref int NationalityCountryID, ref string ImagePath, ref short Gendor, ref string NationalNO)
+        public static bool GetPersonInfoByName(string FirstName, ref int PersonID, ref string SecondName, ref string ThirdName, ref string LastName, ref string Email, ref string Phone, ref string Address, ref DateTime DateOfBirth, ref int NationalityCountryID, ref string ImagePath, ref short Gendor, ref string NationalNO)
         {
             bool result = false;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "SELECT * FROM People WHERE FirstName = @FirstName";
+            string cmdText = "USE [DVLD] ;SELECT * FROM People WHERE FirstName = @FirstName";
             SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@FirstName", FirstName);
             try
@@ -99,12 +99,13 @@ namespace DataAccessLayerLib
                     //FullName = (FirstName +(string)sqlDataReader["SecondName"]+(string)sqlDataReader["ThirdName"] + (string)sqlDataReader["LastName"]).ToString();
                     LastName = (string)sqlDataReader["LastName"];
                     Email = (string)sqlDataReader["Email"];
-                    Phon = (string)sqlDataReader["Phon"];
+                    Phone = (string)sqlDataReader["Phone"];
                     Address = (string)sqlDataReader["Address"];
                     DateOfBirth = (DateTime)sqlDataReader["DateOfBirth"];
-                    Gendor = (short)sqlDataReader["Gendor"];
+                    Gendor = Convert.ToInt16(sqlDataReader["Gendor"]);
                     NationalityCountryID = (int)sqlDataReader["NationalityCountryID"];
                     NationalNO = (string)sqlDataReader["NationalNO"];
+                    PersonID = (int)sqlDataReader["PersonID"];
 
                     if (sqlDataReader["ImagePath"] != DBNull.Value)
                     {
@@ -134,11 +135,11 @@ namespace DataAccessLayerLib
             return result;
         }
         
-        public static bool GetPersonInfoByNationalNumber(string NationalNO, ref int PersonID, ref string FirstName,  ref string SecondName, ref string ThirdName, ref string LastName, ref string Email, ref string Phon, ref string Address, ref DateTime DateOfBirth, ref int NationalityCountryID, ref string ImagePath, ref short Gendor)
+        public static bool GetPersonInfoByNationalNumber(string NationalNO, ref int PersonID, ref string FirstName,  ref string SecondName, ref string ThirdName, ref string LastName, ref string Email, ref string Phone, ref string Address, ref DateTime DateOfBirth, ref int NationalityCountryID, ref string ImagePath, ref short Gendor)
         {
             bool result = false;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "SELECT * FROM People WHERE NationalNO = @NationalNO";
+            string cmdText = "USE [DVLD] ;SELECT * FROM People WHERE NationalNO = @NationalNO";
             SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@NationalNO", NationalNO);
             try
@@ -155,8 +156,8 @@ namespace DataAccessLayerLib
                    //FullName = (FirstName +(string)sqlDataReader["SecondName"]+(string)sqlDataReader["ThirdName"] + (string)sqlDataReader["LastName"]).ToString();
                     LastName = (string)sqlDataReader["LastName"];
                     Email = (string)sqlDataReader["Email"];              
-                    Gendor = (short)sqlDataReader["Gendor"];              
-                    Phon = (string)sqlDataReader["Phon"];                
+                    Gendor = Convert.ToInt16(sqlDataReader["Gendor"]);              
+                    Phone = (string)sqlDataReader["Phone"];                
                     Address = (string)sqlDataReader["Address"];
                     DateOfBirth = (DateTime)sqlDataReader["DateOfBirth"];
                     NationalityCountryID = (int)sqlDataReader["NationalityCountryID"];
@@ -189,88 +190,95 @@ namespace DataAccessLayerLib
 
             return result;
         }
-        
-        public static int AddNewPerson(string FirstName, string SecondName, string ThirdName, string LastName, string Email, string Phon, string Address, DateTime DateOfBirth, int NationalityCountryID, string ImagePath, short Gendor,  string NationalNO)
+
+        public static int AddNewPerson(
+    string FirstName, string SecondName, string ThirdName, string LastName,
+    string Email, string Phone, string Address, DateTime DateOfBirth,
+    int NationalityCountryID, string ImagePath, short Gendor, string NationalNo)
         {
             int result = -1;
-            SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"INSERT INTO [dbo].[People]
-           ([NationalNo]
-           ,[FirstName]
-           ,[SecondName]
-           ,[ThirdName]
-           ,[LastName]
-           ,[DateOfBirth]
-           ,[Gendor]
-           ,[Address]
-           ,[Phone]
-           ,[Email]
-           ,[NationalityCountryID]
-           ,[ImagePath])
-     VALUES
-           (NationalNo
-           ,FirstName
-           ,SecondName
-           ,ThirdName
-           ,LastName
-           ,DateOfBirth
-           ,Gendor
-           ,Address
-           ,Phone
-           ,Email
-           ,NationalityCountryID
-           ,ImagePath)";
+
+            using (SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString))
+            {
+                string query = @" USE [DVLD];
+        INSERT INTO [dbo].[People]   -- << change to [People] if your table is actually named People
+        ([NationalNo]
+        ,[FirstName]
+        ,[SecondName]
+        ,[ThirdName]
+        ,[LastName]
+        ,[DateOfBirth]
+        ,[Gendor]
+        ,[Address]
+        ,[Phone]
+        ,[Email]
+        ,[NationalityCountryID]
+        ,[ImagePath])
+        VALUES
+        (@NationalNo
+        ,@FirstName
+        ,@SecondName
+        ,@ThirdName
+        ,@LastName
+        ,@DateOfBirth
+        ,@Gendor
+        ,@Address
+        ,@Phone
+        ,@Email
+        ,@NationalityCountryID
+        ,@ImagePath);
+
+        SELECT SCOPE_IDENTITY();";
 
 
-            
-            SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
-            sqlCommand.Parameters.AddWithValue("@FirstName", FirstName);
-            sqlCommand.Parameters.AddWithValue("@ThirdName", ThirdName);
-            sqlCommand.Parameters.AddWithValue("@NationalNO", NationalNO);
-            
-            sqlCommand.Parameters.AddWithValue("@SecondName", SecondName);
-            sqlCommand.Parameters.AddWithValue("@LastName", LastName);
-            sqlCommand.Parameters.AddWithValue("@Email", Email);
-            sqlCommand.Parameters.AddWithValue("@Phon", Phon);
-            sqlCommand.Parameters.AddWithValue("@Address", Address);
-            sqlCommand.Parameters.AddWithValue("@NationalityCountryID", NationalityCountryID);
-            sqlCommand.Parameters.AddWithValue("@DateOfBirth", DateOfBirth);
-            sqlCommand.Parameters.AddWithValue("@Gendor", Gendor);
-            
-            if (ImagePath != "" && ImagePath != null)
-            {
-                sqlCommand.Parameters.AddWithValue("@ImagePath", ImagePath);
-            }
-            else
-            {
-                sqlCommand.Parameters.AddWithValue("@ImagePath", DBNull.Value);
-            }
+                //the error In this query doesn't exist @ placeholder in parameters Values -----------------
+                //string query = @" INSERT INTO [dbo].[People] ([NationalNo] ,[FirstName] ,[SecondName] ,[ThirdName] ,[LastName] ,[DateOfBirth] ,[Gendor] ,[Address] ,[Phone] ,[Email] ,[NationalityCountryID] ,[ImagePath])
+                //VALUES (NationalNo ,FirstName ,SecondName ,ThirdName ,LastName ,DateOfBirth ,Gendor ,Address ,Phone ,Email ,NationalityCountryID ,ImagePath); SELECT SCOPE_IDENTITY();";
 
-            try
-            {
-                sqlConnection.Open();
-                object obj = sqlCommand.ExecuteScalar();
-                if (obj != null && int.TryParse(obj.ToString(), out var result2))
+                using (SqlCommand sqlCommand = new SqlCommand(query, sqlConnection))
                 {
-                    result = result2;
+                    sqlCommand.Parameters.AddWithValue("@NationalNo", NationalNo);
+                    sqlCommand.Parameters.AddWithValue("@FirstName", FirstName);
+                    sqlCommand.Parameters.AddWithValue("@SecondName", SecondName);
+                    sqlCommand.Parameters.AddWithValue("@ThirdName", ThirdName);
+                    sqlCommand.Parameters.AddWithValue("@LastName", LastName);
+                    sqlCommand.Parameters.AddWithValue("@Email", Email);
+                    sqlCommand.Parameters.AddWithValue("@Phone", Phone);
+                    sqlCommand.Parameters.AddWithValue("@Address", Address);
+                    sqlCommand.Parameters.AddWithValue("@NationalityCountryID", NationalityCountryID);
+                    sqlCommand.Parameters.AddWithValue("@DateOfBirth", DateOfBirth);
+                    sqlCommand.Parameters.AddWithValue("@Gendor", Gendor);
+
+                    if (!string.IsNullOrEmpty(ImagePath))
+                        sqlCommand.Parameters.AddWithValue("@ImagePath", ImagePath);
+                    else
+                        sqlCommand.Parameters.AddWithValue("@ImagePath", DBNull.Value);
+
+                    try
+                    {
+                        sqlConnection.Open();
+                        object obj = sqlCommand.ExecuteScalar();
+                        if (obj != null && int.TryParse(obj.ToString(), out int result2))
+                        {
+                            result = result2;
+                        }
+                    }
+                    catch (SqlException ex)
+                    {
+                        // Log the real SQL error for debugging
+                        Console.WriteLine("SQL Error: " + ex.Message);
+                    }
                 }
-            }
-            catch (SqlException)
-            {
-            }
-            finally
-            {
-                sqlConnection.Close();
             }
 
             return result;
         }
 
-        public static bool UpdatePerson(int PersonID, string FirstName, string SecondName, string ThirdName, string LastName, string Email, string Phon, string Address, DateTime DateOfBirth, int NationalityCountryID, string ImagePath, short Gendor,  string NationalNO)
+        public static bool UpdatePerson(int PersonID, string FirstName, string SecondName, string ThirdName, string LastName, string Email, string Phone, string Address, DateTime DateOfBirth, int NationalityCountryID, string ImagePath, short Gendor,  string NationalNO)
         {
             int num = 0;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string query = @"UPDATE [dbo].[People]
+            string query = @"USE [DVLD]; UPDATE [dbo].[People]
    SET [NationalNo] = @NationalNo	
       ,[FirstName] =  @FirstName	
       ,[SecondName] = @SecondName	
@@ -285,18 +293,20 @@ namespace DataAccessLayerLib
       ,[ImagePath] = @ImagePath WHERE PersonID =@PersonID; ";
             SqlCommand sqlCommand = new SqlCommand(query, sqlConnection);
            
-            sqlCommand.Parameters.AddWithValue("@NationalNO", NationalNO);
+            sqlCommand.Parameters.AddWithValue("@PersonID", PersonID);
+            sqlCommand.Parameters.AddWithValue("@NationalityCountryID", NationalityCountryID);
+            sqlCommand.Parameters.AddWithValue("@NationalNo", NationalNO);
             sqlCommand.Parameters.AddWithValue("@ThirdName", ThirdName);
             sqlCommand.Parameters.AddWithValue("@SecondName", SecondName);
             sqlCommand.Parameters.AddWithValue("@FirstName", FirstName);
             sqlCommand.Parameters.AddWithValue("@LastName", LastName);
             sqlCommand.Parameters.AddWithValue("@Email", Email);
-            sqlCommand.Parameters.AddWithValue("@Phon", Phon);
+            sqlCommand.Parameters.AddWithValue("@Phone", Phone);
             sqlCommand.Parameters.AddWithValue("@Address", Address);
             sqlCommand.Parameters.AddWithValue("@DateOfBirth", DateOfBirth);
             sqlCommand.Parameters.AddWithValue("@Gendor", Gendor);
             
-            if (ImagePath != "" && ImagePath != null)
+            if (ImagePath != "USE [DVLD] ;" && ImagePath != null)
             {
                 sqlCommand.Parameters.AddWithValue("@ImagePath", ImagePath);
             }
@@ -372,7 +382,7 @@ SELECT [PersonID]
         {
             int num = 0;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "Delete People \r\n                                where PersonID = @PersonID";
+            string cmdText = "USE [DVLD] ;USE [DVLD]; Delete People \r\n                                where PersonID = @PersonID";
             SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@PersonID", PersonID);
             try
@@ -395,7 +405,7 @@ SELECT [PersonID]
         {
             bool result = false;
             SqlConnection sqlConnection = new SqlConnection(clsDataAccessSettings.ConnectionString);
-            string cmdText = "SELECT Found=1 FROM People WHERE PersonID = @PersonID";
+            string cmdText = "USE [DVLD] ; SELECT Found=1 FROM People WHERE PersonID = @PersonID";
             SqlCommand sqlCommand = new SqlCommand(cmdText, sqlConnection);
             sqlCommand.Parameters.AddWithValue("@PersonID", PersonID);
             try

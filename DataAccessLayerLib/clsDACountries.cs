@@ -1,4 +1,4 @@
-﻿using DataAccessLayerLib;
+﻿using DVLD_DataAccessLayerLib;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DataAccessLayerLib
+namespace DVLD_DataAccessLayerLib
 {
     
     public class clsDACountries
